@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Greylight admin</title>
+<link rel="icon" type="image/png" href="img/mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="pages.css">
+<style>
+  .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--outline); margin: 28px 0 24px; overflow-x: auto; }
+  .tabs button { font: inherit; font-size: 15px; font-weight: 500; color: var(--text2); background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 14px; cursor: pointer; white-space: nowrap; }
+  .tabs button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+  .kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+  .kpi { background: var(--surface); border: 1px solid var(--outline); border-radius: 14px; padding: 16px 18px; }
+  .kpi b { display: block; font-size: 30px; letter-spacing: -.6px; font-variant-numeric: tabular-nums; }
+  .kpi span { color: var(--text2); font-size: 13px; }
+  .grid2 { display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; margin-top: 16px; }
+  .panel { background: var(--surface); border: 1px solid var(--outline); border-radius: 14px; padding: 18px; min-width: 0; }
+  .panel h2 { font-size: 16px; margin: 0 0 14px; }
+  .bars svg { width: 100%; height: 180px; display: block; }
+  .bars rect.bar { fill: #d4d4d4; }
+  .bars rect.hit { fill: transparent; }
+  .bars rect.hit:hover + rect.bar, .bars g:hover rect.bar { fill: #ffffff; }
+  .bars text { fill: #6b6b6b; font-size: 11px; font-family: Inter, sans-serif; }
+  .list { display: grid; gap: 8px; }
+  .li { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; font-size: 14px; }
+  .li .track { grid-column: 1 / -1; height: 6px; background: var(--hover); border-radius: 3px; overflow: hidden; }
+  .li .track i { display: block; height: 100%; background: #d4d4d4; border-radius: 3px; }
+  .li em { font-style: normal; color: var(--text2); font-variant-numeric: tabular-nums; }
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+  .toolbar input { max-width: 320px; }
+  .tablewrap { overflow-x: auto; border: 1px solid var(--outline); border-radius: 14px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--outline); white-space: nowrap; }
+  th { color: var(--text2); font-weight: 500; background: var(--surface); position: sticky; top: 0; cursor: pointer; user-select: none; }
+  tr:last-child td { border-bottom: 0; }
+  td.num { font-variant-numeric: tabular-nums; text-align: right; }
+  .preview { background: var(--raised); border: 1px solid var(--outline); border-radius: 12px; padding: 16px; }
+  .wide { max-width: 1120px; }
+  @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .grid2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="./"><img src="img/mark.png" alt="">Greylight <span class="muted" style="font-weight:500">· Admin</span></a>
+    <div class="right"><span id="me"></span><button class="btn" id="signout" hidden style="padding:7px 12px">Sign out</button></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="gate" class="narrow">
+    <h1>Greylight admin</h1>
+    <p class="sub" id="gate-text">Sign in with the Greylight team account to see downloads, users and publish updates.</p>
+    <div id="gate-err" class="msg err" hidden></div>
+    <button class="btn primary" id="google">Sign in with Google</button>
+  </section>
+
+  <section id="app" hidden>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-tab="overview">Overview</button>
+      <button role="tab" aria-selected="false" data-tab="users">Users</button>
+      <button role="tab" aria-selected="false" data-tab="release">Publish an update</button>
+      <button role="tab" aria-selected="false" data-tab="site">Website notice</button>
+    </div>
+    <div id="load-err" class="msg err" hidden></div>
+
+    <div data-panel="overview">
+      <div class="kpis">
+        <div class="kpi"><b id="k-users">–</b><span>People signed up</span></div>
+        <div class="kpi"><b id="k-new">–</b><span>New sign-ups, last 7 days</span></div>
+        <div class="kpi"><b id="k-dl">–</b><span>Downloads</span></div>
+        <div class="kpi"><b id="k-split">–</b><span>Mac · Windows downloads</span></div>
+        <div class="kpi"><b id="k-active">–</b><span>Opened Greylight, last 7 days</span></div>
+      </div>
+      <div class="grid2">
+        <div class="panel bars"><h2>Downloads per day, last 30 days</h2><div id="chart"></div></div>
+        <div class="panel"><h2>Where people are (sign-ups by country)</h2><div class="list" id="countries"></div></div>
+      </div>
+      <div class="grid2">
+        <div class="panel"><h2>Versions in use (last app open)</h2><div class="list" id="versions"></div></div>
+        <div class="panel"><h2>Ages</h2><div class="list" id="ages"></div></div>
+      </div>
+      <p class="muted" id="updated" style="margin-top:14px"></p>
+    </div>
+
+    <div data-panel="users" hidden>
+      <div class="toolbar">
+        <input id="search" type="search" placeholder="Search name, email or place">
+        <button class="btn" id="csv">Download as spreadsheet (CSV)</button>
+        <span class="muted" id="count"></span>
+      </div>
+      <div class="tablewrap"><table id="table"><thead><tr>
+        <th data-k="name">Name</th><th data-k="email">Email</th><th data-k="age">Age</th><th data-k="city">City</th><th data-k="state">State</th><th data-k="country">Country</th>
+        <th data-k="createdAt">Signed up</th><th data-k="downloads">Downloads</th><th data-k="lastOpenedAt">Last opened app</th><th data-k="appVersion">App version</th><th data-k="appOs">System</th>
+      </tr></thead><tbody></tbody></table></div>
+    </div>
+
+    <div data-panel="release" hidden class="narrow" style="max-width:720px">
+      <p class="sub">When you publish a new version, everyone's Greylight shows it on Home the next time it opens, with what's new and a Download button. Upload the new files to the download repository first.</p>
+      <form id="release" class="card">
+        <div id="rel-msg" class="msg" hidden></div>
+        <div class="row">
+          <label><span>Version (for example 0.16.0)</span><input name="version" required pattern="\d+(\.\d+){1,3}"></label>
+          <label><span>Release date</span><input name="date" type="date" required></label>
+        </div>
+        <label><span>What's new (one change per line)</span><textarea name="notes" placeholder="Faster previews in CRP&#10;New brushes in Graphics"></textarea></label>
+        <label><span>Mac download address</span><input name="macUrl" type="url"></label>
+        <label><span>Windows download address</span><input name="windowsUrl" type="url"></label>
+        <button class="btn primary" type="submit">Publish to everyone's Greylight</button>
+      </form>
+      <h2 style="margin-top:24px">What people will see</h2>
+      <div class="preview" id="rel-preview"></div>
+    </div>
+
+    <div data-panel="site" hidden class="narrow" style="max-width:720px">
+      <p class="sub">A short notice at the top of the download page, for news like a new version or an event. Leave it empty to hide it.</p>
+      <form id="notice" class="card">
+        <div id="notice-msg" class="msg" hidden></div>
+        <label><span>Notice text</span><input name="text" maxlength="160" placeholder="Greylight 0.16 is here with faster previews"></label>
+        <label><span>Link (optional)</span><input name="link" type="url" placeholder="https://…"></label>
+        <button class="btn primary" type="submit">Save notice</button>
+      </form>
+    </div>
+  </section>
+</main>
+<footer class="wrap">Greylight admin · visible only to the Greylight team account</footer>
+
+<script type="module">
+import * as A from './account.js';
+const $ = id => document.getElementById(id);
+const fmtDate = d => d ? d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+let data = { users: [], downloads: [] };
+
+function flash(id, ok, text) { const m = $(id); m.className = 'msg ' + (ok ? 'ok' : 'err'); m.textContent = text; m.hidden = false; }
+
+if (!A.configured) {
+  $('gate-text').textContent = 'The Firebase project isn\'t connected yet (firebase-config.js).';
+  $('google').hidden = true;
+} else {
+  A.onUser(async u => {
+    $('me').textContent = u ? u.email : '';
+    $('signout').hidden = !u;
+    const admin = u && u.email === A.ADMIN_EMAIL && u.emailVerified;
+    $('gate').hidden = admin; $('app').hidden = !admin;
+    if (u && !admin) { $('gate-err').textContent = `${u.email} isn't the Greylight team account. Sign out and use ${A.ADMIN_EMAIL}.`; $('gate-err').hidden = false; }
+    if (admin) await load();
+  });
+}
+$('google').onclick = () => A.signInWithGoogle().catch(e => { $('gate-err').textContent = e.code || e.message; $('gate-err').hidden = false; });
+$('signout').onclick = () => A.signOut();
+
+document.querySelectorAll('[role=tab]').forEach(t => t.onclick = () => {
+  document.querySelectorAll('[role=tab]').forEach(x => x.setAttribute('aria-selected', x === t));
+  document.querySelectorAll('[data-panel]').forEach(p => p.hidden = p.dataset.panel !== t.dataset.tab);
+});
+
+async function load() {
+  try {
+    data = await A.adminData();
+    overview(); users();
+    const rel = await A.readPublic('release');
+    const f = $('release');
+    f.version.value = rel?.version || '';
+    f.date.value = (rel?.date?.toDate?.() || new Date()).toISOString().slice(0, 10);
+    f.notes.value = rel?.notes || '';
+    f.macUrl.value = rel?.macUrl || A.fileUrl('mac');
+    f.windowsUrl.value = rel?.windowsUrl || A.fileUrl('windows');
+    preview();
+    const notice = await A.readPublic('site');
+    $('notice').text.value = notice?.notice || '';
+    $('notice').link.value = notice?.noticeLink || '';
+    $('updated').textContent = 'Updated ' + new Date().toLocaleTimeString() + ' · reload the page for the newest numbers';
+  } catch (e) { $('load-err').textContent = 'Couldn\'t load the data: ' + (e.code || e.message); $('load-err').hidden = false; }
+}
+
+const DAY = 864e5;
+function overview() {
+  const { users, downloads } = data, now = Date.now();
+  $('k-users').textContent = users.length;
+  $('k-new').textContent = users.filter(u => u.createdAt && now - u.createdAt < 7 * DAY).length;
+  $('k-dl').textContent = downloads.length;
+  $('k-split').textContent = `${downloads.filter(d => d.os === 'mac').length} · ${downloads.filter(d => d.os === 'windows').length}`;
+  $('k-active').textContent = users.filter(u => u.lastOpenedAt && now - u.lastOpenedAt < 7 * DAY).length;
+
+  // Downloads per day: one series, so one colour and no legend; each bar names its day and count on hover.
+  const days = [...Array(30)].map((_, i) => { const d = new Date(now - (29 - i) * DAY); d.setHours(0, 0, 0, 0); return d; });
+  const counts = days.map(d => downloads.filter(x => x.at && x.at >= d && x.at < new Date(+d + DAY)).length);
+  const max = Math.max(1, ...counts), W = 600, H = 180, pad = 22, bw = (W - 8) / 30;
+  $('chart').innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Downloads per day for the last 30 days">
+    <line x1="0" y1="${H - pad}" x2="${W}" y2="${H - pad}" stroke="#2e2e2e"/>
+    ${counts.map((c, i) => { const h = c ? Math.max(3, (H - pad - 14) * c / max) : 0, x = 4 + i * bw;
+      return `<g><title>${fmtDate(days[i])}: ${c} download${c === 1 ? '' : 's'}</title>
+        <rect class="hit" x="${x}" y="0" width="${bw}" height="${H - pad}"/>
+        <rect class="bar" x="${x + 2}" y="${H - pad - h}" width="${bw - 4}" height="${h}" rx="3"/></g>`; }).join('')}
+    <text x="4" y="${H - 6}">${fmtDate(days[0])}</text><text x="${W - 4}" y="${H - 6}" text-anchor="end">Today</text>
+    <text x="${W - 4}" y="12" text-anchor="end">max ${max}</text></svg>`;
+
+  list('countries', tally(users.map(u => u.country || 'Unknown')), users.length);
+  const opened = users.filter(u => u.appVersion);
+  list('versions', tally(opened.map(u => `${u.appVersion} · ${u.appOs === 'windows' ? 'Windows' : u.appOs === 'macos' ? 'Mac' : u.appOs || ''}`)), opened.length, 'No one has opened the app yet.');
+  const band = a => a < 18 ? '13–17' : a < 25 ? '18–24' : a < 35 ? '25–34' : a < 45 ? '35–44' : a < 55 ? '45–54' : '55+';
+  const order = ['13–17', '18–24', '25–34', '35–44', '45–54', '55+'];
+  list('ages', tally(users.filter(u => u.age).map(u => band(u.age))).sort((a, b) => order.indexOf(a[0]) - order.indexOf(b[0])), users.length);
+}
+function tally(xs) { const m = new Map(); xs.forEach(x => m.set(x, (m.get(x) || 0) + 1)); return [...m].sort((a, b) => b[1] - a[1]); }
+function list(id, rows, total, empty = 'No sign-ups yet.') {
+  $(id).innerHTML = rows.length ? rows.slice(0, 12).map(([k, n]) => `<div class="li"><span>${esc(k)}</span><em>${n} · ${Math.round(100 * n / Math.max(1, total))}%</em><div class="track"><i style="width:${100 * n / rows[0][1]}%"></i></div></div>`).join('') : `<p class="muted">${empty}</p>`;
+}
+function esc(s) { return String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+
+let sortKey = 'createdAt', sortDir = -1;
+const val = (u, k) => k === 'name' ? `${u.firstName || ''} ${u.lastName || ''}` : u[k];
+function rowsShown() {
+  const q = $('search').value.trim().toLowerCase();
+  return data.users
+    .filter(u => !q || [u.firstName, u.lastName, u.email, u.city, u.state, u.country].join(' ').toLowerCase().includes(q))
+    .sort((a, b) => { const x = val(a, sortKey) ?? '', y = val(b, sortKey) ?? ''; return (x > y ? 1 : x < y ? -1 : 0) * sortDir; });
+}
+function users() {
+  const rows = rowsShown();
+  $('count').textContent = `${rows.length} of ${data.users.length} people`;
+  $('table').tBodies[0].innerHTML = rows.map(u => `<tr><td>${esc(`${u.firstName || ''} ${u.lastName || ''}`)}</td><td>${esc(u.email)}</td><td class="num">${esc(u.age)}</td>
+    <td>${esc(u.city)}</td><td>${esc(u.state)}</td><td>${esc(u.country)}</td><td>${fmtDate(u.createdAt)}</td><td class="num">${u.downloads || 0}</td>
+    <td>${fmtDate(u.lastOpenedAt)}</td><td>${esc(u.appVersion)}</td><td>${esc(u.appOs === 'macos' ? 'Mac' : u.appOs === 'windows' ? 'Windows' : u.appOs)}</td></tr>`).join('')
+    || '<tr><td colspan="11" class="muted">No one yet.</td></tr>';
+}
+$('search').oninput = users;
+document.querySelectorAll('th[data-k]').forEach(th => th.onclick = () => { sortDir = sortKey === th.dataset.k ? -sortDir : 1; sortKey = th.dataset.k; users(); });
+$('csv').onclick = () => {
+  const cols = ['firstName', 'lastName', 'email', 'age', 'city', 'state', 'country', 'createdAt', 'downloads', 'lastDownloadOs', 'lastOpenedAt', 'appVersion', 'appOs'];
+  const cell = v => { const s = v instanceof Date ? v.toISOString() : String(v ?? ''); return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
+  const csv = [cols.join(','), ...rowsShown().map(u => cols.map(c => cell(u[c])).join(','))].join('\n');
+  const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv' })), download: `greylight-users-${new Date().toISOString().slice(0, 10)}.csv` });
+  a.click(); URL.revokeObjectURL(a.href);
+};
+
+function preview() {
+  const f = $('release');
+  const notes = f.notes.value.split('\n').map(s => s.trim()).filter(Boolean);
+  $('rel-preview').innerHTML = `<b>Greylight ${esc(f.version.value || '…')} is available</b><ul style="margin:8px 0;color:var(--text2)">${notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul><span class="btn primary" style="padding:8px 14px">Download update</span>`;
+}
+$('release').oninput = preview;
+$('release').onsubmit = async ev => {
+  ev.preventDefault();
+  const f = ev.target;
+  if (!/^\d+(\.\d+){1,3}$/.test(f.version.value.trim())) return flash('rel-msg', false, 'Version should look like 0.16.0.');
+  if (!confirm(`Publish Greylight ${f.version.value} to everyone? Their app will show it the next time it opens.`)) return;
+  try {
+    await A.writePublic('release', { version: f.version.value.trim(), date: new Date(f.date.value + 'T12:00:00'), notes: f.notes.value.trim(),
+      macUrl: f.macUrl.value.trim(), windowsUrl: f.windowsUrl.value.trim(), pageUrl: location.origin + location.pathname.replace(/admin\.html$/, '') });
+    flash('rel-msg', true, `Published. Greylight shows ${f.version.value} to everyone with an older version.`);
+  } catch (e) { flash('rel-msg', false, 'Couldn\'t publish: ' + (e.code || e.message)); }
+};
+$('notice').onsubmit = async ev => {
+  ev.preventDefault();
+  try { await A.writePublic('site', { notice: ev.target.text.value.trim(), noticeLink: ev.target.link.value.trim() }); flash('notice-msg', true, 'Saved. It shows on the download page now.'); }
+  catch (e) { flash('notice-msg', false, 'Couldn\'t save: ' + (e.code || e.message)); }
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Greylight · Free photo, design and illustration studio for Mac and Windows</title>
+<meta name="description" content="Greylight is a free all-in-one studio for photo editing, graphic design and illustration. Develop RAW photos, open Lightroom catalogues, edit in layers and draw vectors. Download for Mac and Windows.">
+<meta property="og:title" content="Greylight · Free for Mac and Windows">
+<meta property="og:description" content="Photo editing, graphic design and illustration in one free app.">
+<meta property="og:image" content="img/retouch_portrait.jpg">
+<link rel="icon" type="image/png" href="img/mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a; --surface: #121212; --raised: #1a1a1a; --hover: #262626; --outline: #2e2e2e; --outline2: #3a3a3a;
+    --text: #ededed; --text2: #a3a3a3; --text3: #6b6b6b; --accent: #d4d4d4; --on-accent: #0a0a0a;
+    --radius: 16px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; scroll-padding-top: 76px; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 400 16px/1.6 Inter, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  a { color: inherit; }
+  img { max-width: 100%; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* Top bar */
+  .nav { position: sticky; top: 0; z-index: 10; background: rgba(10,10,10,.82); backdrop-filter: saturate(140%) blur(12px); -webkit-backdrop-filter: saturate(140%) blur(12px); border-bottom: 1px solid rgba(255,255,255,.06); }
+  .nav .wrap { display: flex; align-items: center; gap: 28px; height: 64px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; text-decoration: none; letter-spacing: .2px; }
+  .brand img { width: 26px; height: 26px; }
+  .nav nav { display: flex; gap: 22px; font-size: 14px; color: var(--text2); }
+  .nav nav a { text-decoration: none; }
+  .nav nav a:hover { color: var(--text); }
+  .nav .cta { margin-left: auto; text-decoration: none; font-size: 14px; font-weight: 600; background: var(--accent); color: var(--on-accent); padding: 8px 16px; border-radius: 10px; white-space: nowrap; }
+
+  /* Hero */
+  .hero { padding: 72px 0 24px; text-align: center; }
+  .badge { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text2); border: 1px solid var(--outline); border-radius: 999px; padding: 5px 12px 5px 6px; }
+  .badge b { background: var(--accent); color: var(--on-accent); border-radius: 999px; padding: 1px 8px; font-size: 12px; font-weight: 600; }
+  h1 { font-size: clamp(36px, 6.4vw, 64px); line-height: 1.04; letter-spacing: -1.6px; margin: 22px auto 18px; font-weight: 700; max-width: 900px; }
+  h1 span { color: var(--text2); }
+  .lede { color: var(--text2); font-size: clamp(16px, 2.2vw, 20px); max-width: 680px; margin: 0 auto; }
+  .downloads { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; max-width: 700px; margin: 34px auto 0; }
+  .dl { display: flex; flex-direction: column; gap: 4px; text-decoration: none; padding: 20px 22px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--outline); transition: background .15s, border-color .15s, transform .15s; text-align: left; }
+  .dl:hover { background: var(--raised); border-color: var(--outline2); transform: translateY(-1px); }
+  .dl:focus-visible, .btn:focus-visible, .tabs button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .dl.primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+  .dl.primary:hover { background: #e6e6e6; }
+  .dl .os { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 19px; }
+  .dl .os svg { width: 22px; height: 22px; flex: none; }
+  .dl .meta { font-size: 13px; color: var(--text2); }
+  .dl.primary .meta { color: #3d3d3d; }
+  .trust { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; margin: 18px 0 0; padding: 0; list-style: none; color: var(--text2); font-size: 14px; }
+  .trust li::before { content: "✓"; margin-right: 7px; color: var(--accent); }
+  .howlink { display: inline-block; margin-top: 14px; font-size: 14px; color: var(--text2); }
+
+  /* App window picture */
+  .showcase { margin: 56px auto 0; max-width: 1040px; border-radius: 18px; border: 1px solid var(--outline); background: var(--surface); overflow: hidden; box-shadow: 0 40px 120px rgba(0,0,0,.6); }
+  .showcase .bar { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-bottom: 1px solid var(--outline); font-size: 13px; color: var(--text2); }
+  .showcase .bar i { width: 11px; height: 11px; border-radius: 50%; background: #3a3a3a; display: block; }
+  .showcase .bar .tabs-mini { margin-left: 16px; display: flex; gap: 6px; overflow: hidden; }
+  .showcase .bar .tabs-mini span { padding: 3px 10px; border-radius: 7px; white-space: nowrap; }
+  .showcase .bar .tabs-mini span:first-child { background: var(--hover); color: var(--text); }
+  .showcase .grid { display: grid; grid-template-columns: 1.35fr 1fr; gap: 8px; padding: 8px; }
+  .showcase .grid > div { display: grid; gap: 8px; }
+  .showcase figure { margin: 0; position: relative; border-radius: 10px; overflow: hidden; background: var(--raised); }
+  .showcase figure img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .showcase figcaption { position: absolute; left: 10px; bottom: 10px; font-size: 12px; font-weight: 600; background: rgba(0,0,0,.6); padding: 4px 9px; border-radius: 7px; backdrop-filter: blur(6px); }
+
+  section { padding: 104px 0 0; }
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 1.6px; text-transform: uppercase; color: var(--text3); margin: 0 0 10px; }
+  h2 { font-size: clamp(28px, 4vw, 40px); line-height: 1.12; letter-spacing: -.8px; margin: 0 0 12px; }
+  .sub { color: var(--text2); margin: 0 0 36px; max-width: 680px; font-size: 17px; }
+  .center { text-align: center; }
+  .center .sub { margin-left: auto; margin-right: auto; }
+
+  /* Benefits */
+  .benefits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .benefit { background: var(--surface); border: 1px solid var(--outline); border-radius: var(--radius); padding: 24px; }
+  .benefit .ic { width: 40px; height: 40px; border-radius: 11px; background: var(--hover); display: grid; place-items: center; margin-bottom: 16px; }
+  .benefit .ic svg { width: 20px; height: 20px; stroke: var(--text); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .benefit h3 { font-size: 17px; margin: 0 0 6px; }
+  .benefit p { margin: 0; color: var(--text2); font-size: 15px; }
+
+  /* Workspaces */
+  .ws { display: grid; grid-template-columns: 1.1fr 1fr; gap: 48px; align-items: center; margin-top: 64px; }
+  .ws:first-of-type { margin-top: 0; }
+  .ws.flip .ws-img { order: 2; }
+  .ws-img { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--outline); background: var(--surface); }
+  .ws-img img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; }
+  .ws h3 { font-size: 26px; letter-spacing: -.4px; margin: 0 0 4px; }
+  .ws .for { color: var(--text3); font-size: 14px; margin: 0 0 14px; }
+  .ws p { color: var(--text2); margin: 0 0 16px; }
+  .ticks { list-style: none; padding: 0; margin: 0; display: grid; gap: 9px; }
+  .ticks li { position: relative; padding-left: 28px; font-size: 15px; }
+  .ticks li::before { content: ""; position: absolute; left: 0; top: 4px; width: 17px; height: 17px; border-radius: 50%; background: var(--hover); }
+  .ticks li::after { content: ""; position: absolute; left: 6px; top: 8px; width: 5px; height: 8px; border: solid var(--accent); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  .note { color: var(--text3); font-size: 14px; margin-top: 40px; text-align: center; }
+
+  /* Highlights strip */
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .chips span { border: 1px solid var(--outline); background: var(--surface); border-radius: 999px; padding: 8px 15px; font-size: 14px; color: var(--text2); }
+
+  /* Install */
+  .tabs { display: inline-flex; background: var(--surface); border: 1px solid var(--outline); border-radius: 999px; padding: 4px; gap: 4px; margin-bottom: 28px; }
+  .tabs button { font: inherit; font-size: 15px; font-weight: 500; color: var(--text2); background: none; border: 0; border-radius: 999px; padding: 9px 22px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .tabs button svg { width: 16px; height: 16px; }
+  .tabs button[aria-selected="true"] { background: var(--hover); color: var(--text); }
+  .guide[hidden] { display: none; }
+  .install { display: grid; grid-template-columns: 1.15fr 1fr; gap: 36px; align-items: start; }
+  .player { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--outline); background: #000; position: sticky; top: 88px; }
+  .player video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #000; }
+  .player .cap { font-size: 13px; color: var(--text3); padding: 10px 14px; border-top: 1px solid var(--outline); background: var(--surface); }
+  .steps { list-style: none; margin: 0; padding: 0; counter-reset: step; display: grid; gap: 12px; }
+  .step { counter-increment: step; background: var(--surface); border: 1px solid var(--outline); border-radius: 14px; padding: 16px 18px 16px 60px; position: relative; }
+  .step::before { content: counter(step); position: absolute; left: 16px; top: 15px; width: 30px; height: 30px; border-radius: 50%; background: var(--accent); color: var(--on-accent); display: grid; place-items: center; font-weight: 700; font-size: 14px; }
+  .step b { display: block; font-size: 16px; margin-bottom: 2px; }
+  .step span { color: var(--text2); font-size: 15px; }
+  .step kbd, .faq kbd { font: inherit; font-size: 13px; background: var(--hover); border: 1px solid var(--outline2); border-radius: 6px; padding: 1px 6px; color: var(--text); white-space: nowrap; }
+  .trouble { margin-top: 26px; }
+  .trouble h3 { font-size: 17px; margin: 0 0 10px; }
+
+  details { background: var(--surface); border: 1px solid var(--outline); border-radius: 12px; margin-bottom: 10px; }
+  summary { cursor: pointer; list-style: none; padding: 15px 48px 15px 18px; font-weight: 600; position: relative; font-size: 15px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; position: absolute; right: 18px; top: 12px; font-size: 22px; font-weight: 400; color: var(--text2); transition: transform .2s; }
+  details[open] summary::after { transform: rotate(45deg); }
+  details p { margin: 0; padding: 0 18px 16px; color: var(--text2); font-size: 15px; }
+  details p + p { padding-top: 0; }
+
+  /* Requirements */
+  .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .fact { background: var(--surface); border: 1px solid var(--outline); border-radius: var(--radius); padding: 24px; }
+  .fact h3 { margin: 0 0 10px; font-size: 18px; display: flex; align-items: center; gap: 10px; }
+  .fact h3 svg { width: 20px; height: 20px; }
+  .fact ul { margin: 0; padding-left: 18px; color: var(--text2); font-size: 15px; }
+  .fact li + li { margin-top: 5px; }
+
+  .faq { max-width: 820px; margin: 0 auto; }
+
+  /* Final call */
+  .final { margin-top: 104px; text-align: center; background: linear-gradient(180deg, var(--surface), var(--bg)); border: 1px solid var(--outline); border-radius: 24px; padding: 64px 24px; }
+  .final .downloads { margin-top: 28px; }
+  .feedback { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 18px; background: var(--surface); border: 1px solid var(--outline); border-radius: var(--radius); padding: 26px; }
+  .feedback p { margin: 0; color: var(--text2); max-width: 600px; }
+  .btn { display: inline-block; text-decoration: none; font-weight: 600; background: var(--hover); border: 1px solid var(--outline2); padding: 11px 18px; border-radius: 11px; overflow-wrap: anywhere; }
+
+  .notice[hidden] { display: none; }
+  .notice { display: block; text-align: center; background: var(--accent); color: var(--on-accent); font-size: 14px; font-weight: 500; padding: 9px 16px; text-decoration: none; }
+  .nav .acct { font-size: 14px; color: var(--text2); text-decoration: none; white-space: nowrap; }
+  .nav .acct:hover { color: var(--text); }
+  .versions { display: grid; gap: 12px; }
+  .ver-card { background: var(--surface); border: 1px solid var(--outline); border-radius: 14px; padding: 18px 20px; display: grid; grid-template-columns: 1fr auto; gap: 6px 20px; align-items: start; }
+  .ver-card h3 { margin: 0; font-size: 18px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .ver-card h3 small { font-size: 13px; font-weight: 500; color: var(--text3); }
+  .ver-card .tag { font-size: 11px; font-weight: 700; letter-spacing: .6px; text-transform: uppercase; background: var(--accent); color: var(--on-accent); border-radius: 999px; padding: 2px 8px; }
+  .ver-card ul { margin: 6px 0 0; padding-left: 18px; color: var(--text2); font-size: 15px; grid-column: 1; }
+  .ver-card .vdl { grid-row: 1 / span 2; grid-column: 2; display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .ver-card .vdl a { font-size: 14px; padding: 8px 12px; }
+  .ver-card .req { grid-column: 1; color: var(--text3); font-size: 13px; }
+  @media (max-width: 600px) { .ver-card { grid-template-columns: 1fr; } .ver-card .vdl { grid-row: auto; grid-column: 1; justify-content: flex-start; } }
+  .dl.soon { cursor: default; opacity: .75; }
+  .dl.soon:hover { transform: none; }
+  .soon-note { display: none; max-width: 700px; margin: 14px auto 0; font-size: 14px; color: var(--text2); background: var(--surface); border: 1px solid var(--outline); border-radius: 12px; padding: 12px 16px; }
+  .soon-note.on { display: block; }
+  footer.wrap { color: var(--text3); font-size: 13px; padding-top: 64px; padding-bottom: 40px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; }
+  footer a { color: var(--text2); text-decoration: none; }
+
+  @media (max-width: 900px) {
+    .nav nav { display: none; }
+    .benefits, .facts { grid-template-columns: 1fr 1fr; }
+    .ws, .install { grid-template-columns: 1fr; gap: 24px; }
+    .ws.flip .ws-img { order: 0; }
+    .player { position: static; }
+  }
+  @media (max-width: 600px) {
+    .wrap { padding: 0 16px; }
+    .downloads { grid-template-columns: 1fr; }
+    .benefits, .facts { grid-template-columns: 1fr; }
+    .hero { padding-top: 44px; }
+    section { padding-top: 76px; }
+    .showcase .grid { grid-template-columns: 1fr; }
+    .showcase .bar .tabs-mini span:not(:first-child) { display: none; }
+    .tabs button { padding: 9px 16px; }
+    .step { padding-left: 56px; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .dl { transition: none; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="apple" viewBox="0 0 24 24"><path fill="currentColor" d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.3.9-1.3 1.3-2.6 1.3-2.6s-2.5-1-2.5-3.8zM14.1 5.8c.6-.8 1.1-1.8 1-2.8-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.7-1 2.7 1 .1 2-.5 2.7-1.3z"/></symbol>
+  <symbol id="windows" viewBox="0 0 24 24"><path fill="currentColor" d="M3 5.1 10.4 4v7.1H3V5.1zm8.3-1.2L21 2.5v8.6h-9.7V3.9zM3 12.1h7.4v7.1L3 18.1v-6zm8.3 0H21v8.6l-9.7-1.4v-7.2z"/></symbol>
+</svg>
+
+<a class="notice" id="notice" hidden></a>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="img/mark.png" alt="">Greylight</a>
+    <nav aria-label="Sections">
+      <a href="#why">Why Greylight</a><a href="#workspaces">Workspaces</a><a href="#install">How to install</a><a href="#versions">Versions</a><a href="#requirements">Requirements</a><a href="#faq">FAQ</a>
+    </nav>
+    <a class="acct" id="acct" href="account.html">Sign in</a>
+    <a class="cta" id="nav-dl" href="#download">Download free</a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap">
+    <div class="hero" id="download">
+      <span class="badge"><b>Free</b>Early preview · version <span class="ver">0.15.0</span></span>
+      <h1>Edit photos, design and illustrate. <span>One free app.</span></h1>
+      <p class="lede">Greylight puts RAW photo development, layered graphic design and vector illustration in one studio on your Mac or Windows PC. Free, with no subscription.</p>
+
+      <div class="downloads">
+        <a class="dl dl-mac" href="#">
+          <span class="os"><svg aria-hidden="true"><use href="#apple"/></svg>Download for Mac</span>
+          <span class="meta meta-mac">Apple silicon and Intel · macOS 12 or newer</span>
+        </a>
+        <a class="dl dl-win" href="#">
+          <span class="os"><svg aria-hidden="true"><use href="#windows"/></svg>Download for Windows</span>
+          <span class="meta meta-win">Windows 10 or 11 · 64-bit</span>
+        </a>
+      </div>
+      <p class="soon-note" id="soon-note" role="status">The first Greylight downloads are being prepared and will be here very soon. Check back shortly.</p>
+      <ul class="trust">
+        <li>Free, no subscription</li><li>Quick sign-up with Google</li><li>Works offline</li><li>Opens Lightroom catalogues</li>
+      </ul>
+      <p class="howlink" style="margin-bottom:0">Downloading needs a free Greylight account: sign up with Google in a few seconds.</p>
+      <a class="howlink" href="#install">New to installing apps? Watch the 1-minute install video ↓</a>
+
+      <div class="showcase" aria-hidden="true">
+        <div class="bar"><i></i><i></i><i></i><div class="tabs-mini"><span>Camera RAW Process</span><span>Graphics</span><span>Designing and Illustration</span></div></div>
+        <div class="grid">
+          <figure><img src="img/retouch_portrait.jpg" alt=""><figcaption>Develop RAW photos</figcaption></figure>
+          <div>
+            <figure><img src="img/design_poster.jpg" alt=""><figcaption>Design in layers</figcaption></figure>
+            <figure><img src="img/illus_moon.jpg" alt=""><figcaption>Illustrate</figcaption></figure>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section id="why" aria-labelledby="why-title">
+      <div class="center">
+        <p class="eyebrow">Why Greylight</p>
+        <h2 id="why-title">Everything a photographer and designer needs, in one place.</h2>
+        <p class="sub">Most creative work bounces between three apps and three subscriptions. Greylight brings them together and keeps your work on your own computer.</p>
+      </div>
+      <div class="benefits">
+        <div class="benefit"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+          <h3>One app instead of three</h3><p>Develop a photo, take it into a layered design and add vector artwork without exporting and re-importing between programs.</p></div>
+        <div class="benefit"><div class="ic"><svg viewBox="0 0 24 24"><path d="M20 12v8H4v-8M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 1 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 1 0 0-5C13 2 12 7 12 7z"/></svg></div>
+          <h3>Free, with no subscription</h3><p>No trial, no adverts and no credit card. Sign up with Google in a few seconds, download it and start editing.</p></div>
+        <div class="benefit"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v16"/></svg></div>
+          <h3>Bring your Lightroom catalogue</h3><p>Open a Lightroom Classic catalogue and your photos arrive with ratings, flags, labels, crops and Develop settings. Your Lightroom catalogue is only read, never changed.</p></div>
+        <div class="benefit"><div class="ic"><svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9z"/></svg></div>
+          <h3>Fast on your graphics card</h3><p>Greylight draws with your Mac's or PC's graphics card (Metal or Direct3D 12) and falls back to the processor on computers without one.</p></div>
+        <div class="benefit"><div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+          <h3>Your files stay yours</h3><p>Photos are edited where they are on your computer and never uploaded. Greylight works offline; only the AI tools you choose to open need the internet.</p></div>
+        <div class="benefit"><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 3"/></svg></div>
+          <h3>Hard to lose work</h3><p>Catalogue edits save as you make them, with automatic backups. If Greylight ever closes unexpectedly, it offers your unsaved work back.</p></div>
+      </div>
+    </section>
+
+    <section id="workspaces" aria-labelledby="ws-title">
+      <div class="center">
+        <p class="eyebrow">Three workspaces</p>
+        <h2 id="ws-title">A full studio, organised the way you work.</h2>
+        <p class="sub">Familiar layouts and keyboard shortcuts, so you feel at home from the first minute.</p>
+      </div>
+
+      <div class="ws">
+        <div class="ws-img"><img src="img/retouch_portrait.jpg" alt="A portrait photo developed in Greylight's Camera RAW Process" loading="lazy"></div>
+        <div>
+          <h3>Camera RAW Process</h3>
+          <p class="for">For photographers: organise and develop</p>
+          <p>Keep your photos in catalogues, rate and sort them, and develop them with professional controls on smooth rotary dials.</p>
+          <ul class="ticks">
+            <li>RAW files from Canon, Nikon, Sony, Fujifilm and DNG, plus JPEG, HEIC, PNG, TIFF, WebP and PSD</li>
+            <li>White balance, tone, presence, colour mixer, colour grading, tone curves and levels</li>
+            <li>Library with star ratings, pick and reject flags, colour labels, search and filters</li>
+            <li>Crop and straighten, presets, virtual copies and Sync Settings across many photos</li>
+            <li>Open Lightroom Classic catalogues; edits never touch your original files</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ws flip">
+        <div class="ws-img"><img src="img/design_poster.jpg" alt="A layered graphic poster" loading="lazy"></div>
+        <div>
+          <h3>Graphics</h3>
+          <p class="for">For designers and retouchers: layers and pixels</p>
+          <p>Build posters, social posts and composites in layers, with the tools and shortcuts designers already know.</p>
+          <ul class="ticks">
+            <li>Layers with blend modes, opacity, layer masks and adjustment layers</li>
+            <li>Selections: marquee, lasso and polygon, with add, subtract and feather</li>
+            <li>Brush, pencil, eraser, clone stamp, spot healing, dodge and burn, blur and sharpen</li>
+            <li>Type directly on the canvas, shapes, gradients and Free Transform</li>
+            <li>16 bits per channel, colour profiles (sRGB, Display P3) and PSD, TIFF, PNG and JPEG files</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ws">
+        <div class="ws-img"><img src="img/illus_moon.jpg" alt="A painted illustration" loading="lazy"></div>
+        <div>
+          <h3>Designing and Illustration</h3>
+          <p class="for">For illustrators: crisp vector artwork</p>
+          <p>Draw logos, icons and illustrations that stay sharp at any size.</p>
+          <ul class="ticks">
+            <li>Pen tool paths and shapes with fill and stroke</li>
+            <li>Artboards in any size, with alignment to the artboard</li>
+            <li>Arrange, show and hide objects, with full undo</li>
+            <li>Export to SVG for the web, print and other apps</li>
+          </ul>
+        </div>
+      </div>
+      <p class="note">Greylight is an early preview: some tools are still being finished, and every update adds more.</p>
+    </section>
+
+    <section aria-labelledby="more-title" class="center">
+      <p class="eyebrow">And more</p>
+      <h2 id="more-title">Thoughtful details throughout.</h2>
+      <p class="sub">The things you notice after a week of real work.</p>
+      <div class="chips">
+        <span>Dark and light themes</span><span>Your choice of highlight colour</span><span>Every shortcut listed in the Guide</span>
+        <span>Batch export with edits</span><span>Catalogue backups</span><span>AI Studio: your AI tools one click away</span>
+        <span>Big documents and long undo history</span><span>Scratch disk for undo</span><span>Built-in feedback button</span>
+      </div>
+    </section>
+
+    <section id="install" aria-labelledby="install-title">
+      <p class="eyebrow">How to install</p>
+      <h2 id="install-title">Install Greylight in a few minutes.</h2>
+      <p class="sub">Greylight is free and isn't sold through the App Store or Microsoft Store, so your computer asks you to confirm once, the first time you open it. Watch the short video or follow the steps.</p>
+
+      <div class="tabs" role="tablist" aria-label="Your computer">
+        <button role="tab" id="tab-mac" aria-controls="guide-mac" aria-selected="true"><svg aria-hidden="true"><use href="#apple"/></svg>Mac</button>
+        <button role="tab" id="tab-win" aria-controls="guide-win" aria-selected="false" tabindex="-1"><svg aria-hidden="true"><use href="#windows"/></svg>Windows</button>
+      </div>
+
+      <div class="guide" id="guide-mac" role="tabpanel" aria-labelledby="tab-mac">
+        <div class="install">
+          <div class="player">
+            <video controls playsinline preload="metadata" poster="video/install-mac.jpg">
+              <source src="video/install-mac.mp4" type="video/mp4">
+            </video>
+            <div class="cap">Installing Greylight on a Mac · 49 seconds · no sound</div>
+          </div>
+          <div>
+            <ol class="steps">
+              <li class="step"><b>Download Greylight for Mac</b><span>Click <a class="dl-mac" href="#">Download for Mac</a> and sign up with Google if you haven't yet. The file <kbd>Greylight-…-Mac.dmg</kbd> goes to your Downloads folder. One file works on every Mac, Apple silicon and Intel.</span></li>
+              <li class="step"><b>Open the downloaded file</b><span>Double-click the <kbd>.dmg</kbd> file in Downloads (or click it in your browser's download list). A window opens with Greylight and your Applications folder.</span></li>
+              <li class="step"><b>Drag Greylight into Applications</b><span>Drag the Greylight icon onto the Applications folder and wait for the copy to finish. You can then eject the disk image (the eject button next to it in Finder's sidebar).</span></li>
+              <li class="step"><b>Open Greylight</b><span>Open Applications and double-click Greylight. macOS says it can't check it for malicious software. This is normal for free apps not sold by Apple. Click <kbd>Done</kbd>.</span></li>
+              <li class="step"><b>Allow it once in System Settings</b><span>Open <kbd>Apple menu › System Settings › Privacy &amp; Security</kbd>, scroll down to Security and click <kbd>Open Anyway</kbd> next to “Greylight was blocked”. Enter your Mac password, then click <kbd>Open Anyway</kbd> again.</span></li>
+              <li class="step"><b>Sign in and you're ready</b><span>Greylight opens. Click <kbd>Continue with Google</kbd> and choose the account you signed up with; Greylight greets you by name. You only do all this once; from now on, open it from Applications, Launchpad or Spotlight (<kbd>⌘ Space</kbd>, type Greylight). Tip: keep it in the Dock with right-click › Options › Keep in Dock.</span></li>
+            </ol>
+            <div class="trouble">
+              <h3>If something looks different</h3>
+              <details><summary>I can't find “Open Anyway”</summary><p>The button appears in Privacy &amp; Security for about an hour after you try to open Greylight. Double-click Greylight in Applications again, then go straight back to System Settings › Privacy &amp; Security and scroll to the bottom.</p></details>
+              <details><summary>I have macOS 12, 13 or 14</summary><p>You can also right-click (or Control-click) Greylight in Applications, choose <kbd>Open</kbd>, then click <kbd>Open</kbd> in the message. The System Settings steps above work too.</p></details>
+              <details><summary>macOS says the app “is damaged”</summary><p>This can happen if the download was interrupted. Delete Greylight from Applications and the .dmg file from Downloads, download it again, and repeat the steps.</p></details>
+              <details><summary>How do I update or remove Greylight?</summary><p>To update, download the new version and drag it into Applications, choosing <kbd>Replace</kbd>. Your catalogues, settings and files are kept. To remove Greylight, drag it from Applications to the Bin.</p></details>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="guide" id="guide-win" role="tabpanel" aria-labelledby="tab-win" hidden>
+        <div class="install">
+          <div class="player">
+            <video controls playsinline preload="none" poster="video/install-win.jpg">
+              <source src="video/install-win.mp4" type="video/mp4">
+            </video>
+            <div class="cap">Installing Greylight on Windows · 43 seconds · no sound</div>
+          </div>
+          <div>
+            <ol class="steps">
+              <li class="step"><b>Download Greylight for Windows</b><span>Click <a class="dl-win" href="#">Download for Windows</a> and sign up with Google if you haven't yet. The file <kbd>Greylight-…-Windows.zip</kbd> goes to your Downloads folder. If your browser asks, choose <kbd>Keep</kbd>.</span></li>
+              <li class="step"><b>Extract the zip</b><span>In File Explorer › Downloads, right-click the zip and choose <kbd>Extract All…</kbd>, then <kbd>Extract</kbd>. Greylight won't start from inside the zip, so this step matters.</span></li>
+              <li class="step"><b>Move the folder (optional)</b><span>Move the extracted <kbd>Greylight-…-Windows</kbd> folder anywhere you like, for example Documents. Keep everything inside it together.</span></li>
+              <li class="step"><b>Open greylight.exe</b><span>Open the folder and double-click <kbd>greylight.exe</kbd>. Tip: right-click it and choose <kbd>Pin to Start</kbd> or <kbd>Pin to taskbar</kbd> to open it quickly next time.</span></li>
+              <li class="step"><b>Allow it once</b><span>If a blue “Windows protected your PC” message appears, click <kbd>More info</kbd>, then <kbd>Run anyway</kbd>. This is normal for new free apps; Windows won't ask again.</span></li>
+              <li class="step"><b>Sign in and you're ready</b><span>Greylight opens. Click <kbd>Continue with Google</kbd> and choose the account you signed up with; Greylight greets you by name. No installer and nothing else to set up.</span></li>
+            </ol>
+            <div class="trouble">
+              <h3>If something looks different</h3>
+              <details><summary>My browser warns about the download</summary><p>Some browsers flag new downloads they haven't seen often. In Microsoft Edge, open the downloads list, click the <kbd>…</kbd> next to the file and choose <kbd>Keep</kbd> (then <kbd>Keep anyway</kbd>). In Chrome, choose <kbd>Keep</kbd>.</p></details>
+              <details><summary>There's no “Run anyway” button</summary><p>Click the <kbd>More info</kbd> link under the message first; the button appears after it. If your computer is managed by your work or school, they may need to allow the app.</p></details>
+              <details><summary>It says a file such as a .dll is missing</summary><p>Greylight was started from inside the zip, or the folder was split up. Extract the whole zip (step 2) and open greylight.exe from the extracted folder.</p></details>
+              <details><summary>How do I update or remove Greylight?</summary><p>To update, download the new version, extract it and use the new folder; you can delete the old folder. Your catalogues, settings and files are kept. To remove Greylight, delete its folder (and any shortcuts you pinned).</p></details>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="versions" aria-labelledby="ver-title">
+      <p class="eyebrow">Versions</p>
+      <h2 id="ver-title">What's new, and every version so far.</h2>
+      <p class="sub">The newest version is best for most people. Earlier versions stay here in case you need one, for example on an older computer. Greylight tells you inside the app when a new version is out.</p>
+      <div class="versions" id="version-list"><p class="muted" style="color:var(--text3)">Loading versions…</p></div>
+    </section>
+
+    <section id="requirements" aria-labelledby="req-title">
+      <p class="eyebrow">Requirements</p>
+      <h2 id="req-title">Runs on most computers from the last ten years.</h2>
+      <p class="sub">Greylight checks your computer when it starts and tells you if anything is missing.</p>
+      <div class="facts">
+        <div class="fact"><h3><svg aria-hidden="true"><use href="#apple"/></svg>Mac</h3><ul><li>macOS 12 Monterey or newer</li><li>Macs from about 2015 onwards</li><li>Apple silicon (M1 and later) and Intel processors</li></ul></div>
+        <div class="fact"><h3><svg aria-hidden="true"><use href="#windows"/></svg>Windows</h3><ul><li>Windows 10 (version 1809 or newer) or Windows 11</li><li>64-bit</li><li>A Direct3D 12 graphics card makes it faster (optional)</li></ul></div>
+        <div class="fact"><h3>Both</h3><ul><li>4 GB of memory; 8 GB recommended</li><li>About 1 GB of free disk space</li><li>Internet only for downloading and the AI tools</li></ul></div>
+      </div>
+    </section>
+
+    <section id="faq" aria-labelledby="faq-title">
+      <div class="center"><p class="eyebrow">Questions</p><h2 id="faq-title">Frequently asked questions</h2><p class="sub">Can't find your answer? Write to us; every message is read.</p></div>
+      <div class="faq">
+        <details><summary>Is Greylight really free?</summary><p>Yes. The early preview is free to download and use, with no trial period, adverts or credit card. You only need a free Greylight account.</p></details>
+        <details><summary>Why do I need an account?</summary><p>A free Greylight account (Google sign-in) lets the app greet you by name and tell you when a new version is out, and helps us understand who uses Greylight. You sign up once on this site with your name, age and location; when Greylight first opens, you sign in with the same Google account and it stays signed in, also offline. See the <a href="privacy.html">privacy policy</a>; you can delete your account any time.</p></details>
+        <details><summary>Is it safe? Why does my computer warn me?</summary><p>Apple and Microsoft show these messages for apps that aren't sold through their stores or signed with a paid certificate, which Greylight, as a free app, doesn't have yet. The message is about where the app came from, not about anything found in it. Download Greylight only from this page.</p></details>
+        <details><summary>Will it change my Lightroom catalogue or photos?</summary><p>No. Greylight reads a copy of your Lightroom Classic catalogue and never writes to it, and your original photo files are never modified. Edits are kept in Greylight's own catalogue. (Lightroom can't open Greylight catalogues.)</p></details>
+        <details><summary>Which files can it open?</summary><p>JPEG, PNG, TIFF, HEIC, WebP, PSD and camera RAW files (for example CR2, CR3, NEF, ARW, RAF and DNG) for photos and graphics, and SVG export for vector artwork.</p></details>
+        <details><summary>Does it work offline?</summary><p>Yes. Everything runs on your computer. The AI Studio opens AI tools in your browser, which needs the internet.</p></details>
+        <details><summary>Is there a version for iPhone, iPad or Android?</summary><p>Not yet. Greylight starts on Mac and Windows; phones and tablets will follow as the app grows.</p></details>
+        <details><summary>How do I get new versions?</summary><p>Greylight checks for a new version each time it opens and shows it on Home with what's new and a Download update button (also in Help › Check for Updates). Install it the same way as the first time; your catalogues, settings and files are kept. Every version is also listed under <a href="#versions">Versions</a>.</p></details>
+        <details><summary>How do I report a problem or suggest something?</summary><p>In Greylight, choose <kbd>Help › Send feedback</kbd>. It opens your email with the version and device details filled in. Or email greylightcompany53@gmail.com.</p></details>
+      </div>
+    </section>
+
+    <div class="final">
+      <h2>Start creating with Greylight.</h2>
+      <p class="sub" style="margin:0 auto">Free for Mac and Windows. Installs in a few minutes.</p>
+      <div class="downloads">
+        <a class="dl dl-mac" href="#"><span class="os"><svg aria-hidden="true"><use href="#apple"/></svg>Download for Mac</span><span class="meta meta-mac">Apple silicon and Intel · macOS 12 or newer</span></a>
+        <a class="dl dl-win" href="#"><span class="os"><svg aria-hidden="true"><use href="#windows"/></svg>Download for Windows</span><span class="meta meta-win">Windows 10 or 11 · 64-bit</span></a>
+      </div>
+    </div>
+
+    <section aria-labelledby="fb-title" style="padding-top:64px">
+      <div class="feedback">
+        <div><h2 id="fb-title" style="font-size:22px;margin:0 0 6px">Tell us what you think</h2>
+          <p>This is an early preview and your feedback decides what comes next. In Greylight choose <b>Help › Send feedback</b>, or write to us.</p></div>
+        <a class="btn" href="mailto:greylightcompany53@gmail.com?subject=Greylight%20feedback">greylightcompany53@gmail.com</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="wrap">
+  <span>© 2026 Greylight · Free early preview · Version <span class="ver">0.15.0</span></span>
+  <span><a href="#install">How to install</a> · <a href="#faq">FAQ</a> · <a href="mailto:greylightcompany53@gmail.com">Contact</a></span>
+</footer>
+
+<script type="module">
+  import * as A from './account.js';
+
+  // Downloads go through the free account (sign up with Google first),
+  // unless accounts aren't switched on yet.
+  const link = (os, tag) => A.configured
+    ? `account.html?next=${os}${tag ? '&tag=' + encodeURIComponent(tag) : ''}`
+    : A.fileUrl(os, tag);
+  document.querySelectorAll('.dl-mac').forEach(a => a.href = link('mac'));
+  document.querySelectorAll('.dl-win').forEach(a => a.href = link('windows'));
+
+  // The visitor's own computer gets the filled button and its install guide.
+  const isWin = /Windows/i.test(navigator.userAgent);
+  document.querySelectorAll(isWin ? '.dl.dl-win' : '.dl.dl-mac').forEach(a => a.classList.add('primary'));
+  const navDl = document.getElementById('nav-dl');
+  navDl.textContent = isWin ? 'Download for Windows' : 'Download for Mac';
+  navDl.href = link(isWin ? 'windows' : 'mac');
+
+  const tabs = [...document.querySelectorAll('[role="tab"]')];
+  function select(tab) {
+    for (const t of tabs) {
+      const on = t === tab;
+      t.setAttribute('aria-selected', on);
+      t.tabIndex = on ? 0 : -1;
+      const panel = document.getElementById(t.getAttribute('aria-controls'));
+      panel.hidden = !on;
+      if (!on) panel.querySelectorAll('video').forEach(v => v.pause());
+    }
+  }
+  tabs.forEach((t, i) => {
+    t.addEventListener('click', () => select(t));
+    t.addEventListener('keydown', e => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      const next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+      select(next); next.focus();
+    });
+  });
+  if (isWin) select(document.getElementById('tab-win'));
+
+  // Signed in: the top bar says who; the website notice, when there is one.
+  if (A.configured) {
+    A.onUser(async u => {
+      const acct = document.getElementById('acct');
+      if (!u) { acct.textContent = 'Sign in'; return; }
+      const p = await A.getProfile(u.uid).catch(() => null);
+      acct.textContent = p?.firstName ? `Hi, ${p.firstName}` : 'My account';
+    }).catch(() => {});
+    A.readPublic('site').then(site => {
+      if (!site?.notice) return;
+      const n = document.getElementById('notice');
+      n.textContent = site.notice;
+      if (site.noticeLink) n.href = site.noticeLink; else n.removeAttribute('href');
+      n.hidden = false;
+    }).catch(() => {});
+  }
+
+  // A download that isn't published yet says so, instead of leading to a
+  // GitHub "404" page.
+  function markAvailable(ok) {
+    for (const [os, cls] of [['mac', 'dl-mac'], ['windows', 'dl-win']]) {
+      if (ok[os]) continue;
+      document.querySelectorAll('.' + cls).forEach(a => {
+        a.href = '#download';
+        a.classList.add('soon');
+        a.onclick = e => {
+          e.preventDefault();
+          const n = document.getElementById('soon-note');
+          n.textContent = `The ${os === 'mac' ? 'Mac' : 'Windows'} download is being prepared and will be here very soon. Check back shortly.`;
+          n.classList.add('on');
+          document.getElementById('download').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+        a.querySelectorAll('.meta').forEach(m => m.textContent = 'Coming very soon');
+      });
+      if (navDl.href.includes(os === 'mac' ? 'next=mac' : 'next=windows') || navDl.href.endsWith(os === 'mac' ? A.FILES.mac : A.FILES.windows)) {
+        navDl.href = '#download';
+      }
+    }
+  }
+
+  // Every version, newest first, from the download repository's releases.
+  const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const list = document.getElementById('version-list');
+  fetch(`https://api.github.com/repos/${A.REPO}/releases?per_page=30`)
+    .then(r => r.ok ? r.json() : [])
+    .then(releases => {
+      releases = releases.filter(r => !r.draft);
+      const has = name => (releases[0]?.assets || []).some(a => a.name === name);
+      markAvailable({ mac: has(A.FILES.mac), windows: has(A.FILES.windows) });
+      if (!releases.length) { list.innerHTML = '<p class="muted" style="color:var(--text3)">The first version is on its way.</p>'; return; }
+      const mb = n => `${Math.round(n / 1048576)} MB`;
+      list.innerHTML = releases.map((r, i) => {
+        const v = (r.tag_name || '').replace(/^v/, '');
+        const date = r.published_at ? new Date(r.published_at).toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+        const lines = (r.body || '').split('\n').map(l => l.trim()).filter(l => /^[-*•]\s+/.test(l)).map(l => l.replace(/^[-*•]\s+/, '')).slice(0, 8);
+        const req = (r.body || '').split('\n').find(l => /^requires?:/i.test(l.trim()));
+        const asset = name => (r.assets || []).find(a => a.name === name);
+        const mac = asset(A.FILES.mac), win = asset(A.FILES.windows);
+        const tag = i === 0 ? '' : r.tag_name;
+        return `<div class="ver-card"><h3>Greylight ${esc(v)}${i === 0 ? '<span class="tag">Latest</span>' : ''}<small>${esc(date)}</small></h3>
+          <div class="vdl">${mac ? `<a class="btn" href="${link('mac', tag)}">Mac · ${mb(mac.size)}</a>` : ''}${win ? `<a class="btn" href="${link('windows', tag)}">Windows · ${mb(win.size)}</a>` : ''}</div>
+          ${lines.length ? `<ul>${lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>` : ''}
+          ${req ? `<div class="req">${esc(req.trim())}</div>` : ''}</div>`;
+      }).join('');
+      const latest = releases[0];
+      const v = (latest.tag_name || '').replace(/^v/, '');
+      if (v) document.querySelectorAll('.ver').forEach(s => s.textContent = v);
+      for (const a of latest.assets || []) {
+        if (a.name === A.FILES.mac) document.querySelectorAll('.meta-mac').forEach(m => m.textContent += ` · ${mb(a.size)}`);
+        if (a.name === A.FILES.windows) document.querySelectorAll('.meta-win').forEach(m => m.textContent += ` · ${mb(a.size)}`);
+      }
+    })
+    .catch(() => { list.innerHTML = '<p class="muted" style="color:var(--text3)">See all versions on <a href="https://github.com/' + A.REPO + '/releases">GitHub</a>.</p>'; });
+</script>
+</body>
+</html>

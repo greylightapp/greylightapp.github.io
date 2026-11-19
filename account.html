@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Greylight account · Sign up to download</title>
+<meta name="description" content="Create your free Greylight account with Google to download Greylight for Mac and Windows.">
+<link rel="icon" type="image/png" href="img/mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="pages.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="google" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></symbol>
+  <symbol id="apple" viewBox="0 0 24 24"><path fill="currentColor" d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.3.9-1.3 1.3-2.6 1.3-2.6s-2.5-1-2.5-3.8zM14.1 5.8c.6-.8 1.1-1.8 1-2.8-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.7-1 2.7 1 .1 2-.5 2.7-1.3z"/></symbol>
+  <symbol id="windows" viewBox="0 0 24 24"><path fill="currentColor" d="M3 5.1 10.4 4v7.1H3V5.1zm8.3-1.2L21 2.5v8.6h-9.7V3.9zM3 12.1h7.4v7.1L3 18.1v-6zm8.3 0H21v8.6l-9.7-1.4v-7.2z"/></symbol>
+</svg>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="./"><img src="img/mark.png" alt="">Greylight</a>
+    <div class="right"><a href="./#install">How to install</a><a href="privacy.html">Privacy</a></div>
+  </div>
+</header>
+
+<main class="wrap narrow">
+  <div id="loading"><h1>One moment…</h1></div>
+
+  <!-- Signed out -->
+  <section id="signed-out" hidden>
+    <h1>Create your free Greylight account</h1>
+    <p class="sub">Sign up with Google to download Greylight for Mac or Windows. The app signs in with the same account and greets you by name, and you'll be told inside Greylight whenever a new version is out.</p>
+    <div class="card stack">
+      <div id="out-err" class="msg err" hidden></div>
+      <button class="btn primary" id="google" style="width:100%"><svg aria-hidden="true"><use href="#google"/></svg>Continue with Google</button>
+      <p class="muted" style="margin:12px 0 0">Already signed up? Continue with the same Google account to go straight to your downloads. By continuing you agree to our <a href="privacy.html">privacy policy</a>.</p>
+    </div>
+  </section>
+
+  <!-- Sign-up details -->
+  <section id="details" hidden>
+    <h1 id="details-title">Tell us a little about you</h1>
+    <p class="sub" id="details-sub">One step left. This is how Greylight greets you, and it helps us understand where people use it.</p>
+    <form class="card" id="form" novalidate>
+      <div id="form-err" class="msg err" hidden></div>
+      <div class="row">
+        <label><span>First name</span><input name="firstName" autocomplete="given-name" required maxlength="60"></label>
+        <label><span>Last name</span><input name="lastName" autocomplete="family-name" required maxlength="60"></label>
+      </div>
+      <div class="row">
+        <label><span>Age</span><input name="age" type="number" inputmode="numeric" min="13" max="120" required></label>
+        <label><span>Country</span><select name="country" autocomplete="country-name" required><option value="">Choose…</option></select></label>
+      </div>
+      <div class="row">
+        <label><span>State, province or governorate</span><input name="state" autocomplete="address-level1" required maxlength="80"></label>
+        <label><span>City</span><input name="city" autocomplete="address-level2" required maxlength="80"></label>
+      </div>
+      <label><span>Google account (email)</span><input name="email" disabled></label>
+      <label class="check" id="consent-row"><input type="checkbox" name="consent" required>
+        <span style="margin:0">I'm 13 or older and agree that Greylight keeps these details as described in the <a href="privacy.html" target="_blank">privacy policy</a>.</span></label>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px">
+        <button class="btn primary" type="submit" id="save">Save and continue</button>
+        <button class="btn" type="button" id="cancel-edit" hidden>Cancel</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Ready -->
+  <section id="done" hidden>
+    <h1 id="hello">You're all set</h1>
+    <p class="sub" id="done-sub">Download Greylight for your computer. You can come back here any time.</p>
+    <div id="from-app" class="msg ok" hidden>Done. Go back to Greylight and click <b>“I've signed up, continue”</b>.</div>
+    <div class="card stack">
+      <div id="dl-err" class="msg err" hidden></div>
+      <button class="btn primary" data-os="mac" style="width:100%"><svg aria-hidden="true"><use href="#apple"/></svg>Download for Mac</button>
+      <button class="btn" data-os="windows" style="width:100%"><svg aria-hidden="true"><use href="#windows"/></svg>Download for Windows</button>
+      <p class="muted" style="margin:10px 0 0">Next: open the file and follow the <a href="./#install">install steps and video</a>. When Greylight opens the first time, click <b>Continue with Google</b> and choose this same account.</p>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <h2>Your account</h2>
+      <p class="muted" id="who" style="margin:0 0 14px"></p>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn" id="edit">Edit my details</button>
+        <button class="btn" id="signout">Sign out</button>
+        <button class="btn danger" id="delete">Delete my account</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Accounts not switched on yet -->
+  <section id="unconfigured" hidden>
+    <h1>Download Greylight</h1>
+    <p class="sub">Accounts are being switched on. Until then, download directly.</p>
+    <div class="card stack">
+      <a class="btn primary" id="direct-mac" style="width:100%"><svg aria-hidden="true"><use href="#apple"/></svg>Download for Mac</a>
+      <a class="btn" id="direct-win" style="width:100%"><svg aria-hidden="true"><use href="#windows"/></svg>Download for Windows</a>
+    </div>
+  </section>
+</main>
+<footer class="wrap narrow">© 2026 Greylight · <a href="privacy.html">Privacy</a> · <a href="mailto:greylightcompany53@gmail.com">greylightcompany53@gmail.com</a></footer>
+
+<script type="module">
+import * as A from './account.js';
+
+const $ = id => document.getElementById(id);
+const params = new URLSearchParams(location.search);
+const next = params.get('next');            // mac | windows: download once signed up
+const fromApp = params.get('from') === 'app';
+const tag = params.get('tag');               // an older version from the Versions list
+const views = ['loading', 'signed-out', 'details', 'done', 'unconfigured'];
+function show(id) { for (const v of views) $(v).hidden = v !== id; window.scrollTo(0, 0); }
+function err(box, e) {
+  const el = $(box);
+  el.className = 'msg err';
+  if (!e) { el.hidden = true; return; }
+  const code = e.code || e.message || String(e);
+  el.textContent = code.includes('popup-closed') || code.includes('cancelled-popup')
+    ? 'The Google window was closed before signing in. Try again.'
+    : code.includes('popup-blocked') ? 'Your browser blocked the Google window. Allow pop-ups for this site and try again.'
+    : code.includes('network') || code.includes('unavailable') ? 'Can\'t reach Greylight right now. Check your connection and try again.'
+    : code.includes('permission') ? 'That couldn\'t be saved. Check your details (age must be 13 or more) and try again.'
+    : 'Something went wrong (' + code + '). Please try again.';
+  el.hidden = false;
+}
+
+let user = null, profile = null, editing = false;
+
+if (!A.configured) {
+  $('direct-mac').href = A.fileUrl('mac', tag);
+  $('direct-win').href = A.fileUrl('windows', tag);
+  show('unconfigured');
+} else {
+  const select = document.querySelector('select[name=country]');
+  for (const c of A.COUNTRIES) select.add(new Option(c, c));
+  A.onUser(async u => {
+    user = u;
+    if (!u) { show('signed-out'); return; }
+    try {
+      profile = await A.getProfile(u.uid);
+    } catch (e) { profile = null; }
+    route();
+  }).catch(e => { show('signed-out'); err('out-err', e); });
+}
+
+function route() {
+  if (!user) return show('signed-out');
+  if (!A.profileComplete(profile) || editing) return fillForm();
+  $('hello').textContent = `You're all set, ${profile.firstName}!`;
+  $('who').textContent = `${profile.firstName} ${profile.lastName} · ${user.email} · ${[profile.city, profile.state, profile.country].filter(Boolean).join(', ')}`;
+  $('from-app').hidden = !fromApp;
+  show('done');
+  if (next === 'mac' || next === 'windows') {
+    history.replaceState(null, '', location.pathname + (fromApp ? '?from=app' : ''));
+    download(next, tag);
+  }
+}
+
+function fillForm() {
+  const f = $('form');
+  const [first = '', ...rest] = (user.displayName || '').split(/\s+/);
+  f.firstName.value = profile?.firstName ?? first;
+  f.lastName.value = profile?.lastName ?? rest.join(' ');
+  f.age.value = profile?.age ?? '';
+  f.country.value = profile?.country ?? '';
+  f.state.value = profile?.state ?? '';
+  f.city.value = profile?.city ?? '';
+  f.email.value = user.email;
+  f.consent.checked = Boolean(profile);
+  $('details-title').textContent = editing ? 'Edit your details' : 'Tell us a little about you';
+  $('cancel-edit').hidden = !editing;
+  err('form-err', null);
+  show('details');
+}
+
+$('google').onclick = async () => {
+  err('out-err', null);
+  $('google').disabled = true;
+  try { await A.signInWithGoogle(); } catch (e) { err('out-err', e); } finally { $('google').disabled = false; }
+};
+
+$('form').onsubmit = async ev => {
+  ev.preventDefault();
+  const f = ev.target;
+  const age = Number(f.age.value);
+  const problem =
+    !f.firstName.value.trim() ? 'Please enter your first name.' :
+    !f.lastName.value.trim() ? 'Please enter your last name.' :
+    !Number.isFinite(age) || !f.age.value ? 'Please enter your age.' :
+    age < 13 ? 'Sorry, you need to be 13 or older to use Greylight.' :
+    age > 120 ? 'Please check your age.' :
+    !f.country.value ? 'Please choose your country.' :
+    !f.state.value.trim() ? 'Please enter your state, province or governorate.' :
+    !f.city.value.trim() ? 'Please enter your city.' :
+    !f.consent.checked ? 'Please tick the box to agree to the privacy policy.' : '';
+  if (problem) { $('form-err').textContent = problem; $('form-err').hidden = false; return; }
+  $('save').disabled = true;
+  try {
+    await A.saveProfile(user, { firstName: f.firstName.value, lastName: f.lastName.value, age, country: f.country.value, state: f.state.value, city: f.city.value });
+    profile = await A.getProfile(user.uid);
+    editing = false;
+    route();
+  } catch (e) { err('form-err', e); } finally { $('save').disabled = false; }
+};
+$('cancel-edit').onclick = () => { editing = false; route(); };
+$('edit').onclick = () => { editing = true; route(); };
+$('signout').onclick = () => A.signOut();
+$('delete').onclick = async () => {
+  if (!confirm('Delete your Greylight account and the details you gave us? This can\'t be undone. Greylight on your computer will ask you to sign up again.')) return;
+  try { await A.deleteAccount(user); alert('Your Greylight account has been deleted.'); location.href = './'; }
+  catch (e) { err('dl-err', e); }
+};
+
+async function published(os, version) {
+  try {
+    const r = await fetch(`https://api.github.com/repos/${A.REPO}/releases/${version ? 'tags/' + encodeURIComponent(version) : 'latest'}`);
+    if (r.status === 404) return false;
+    if (!r.ok) return true;  // GitHub busy: try the download anyway
+    const rel = await r.json();
+    return (rel.assets || []).some(a => a.name === (os === 'windows' ? A.FILES.windows : A.FILES.mac));
+  } catch (e) { return true; }
+}
+
+async function download(os, version) {
+  err('dl-err', null);
+  if (!(await published(os, version))) {
+    const box = $('dl-err');
+    box.className = 'msg ok';
+    box.textContent = `The ${os === 'mac' ? 'Mac' : 'Windows'} download is being prepared and will be here very soon. You're signed up, so just come back to this page and click Download.`;
+    box.hidden = false;
+    return;
+  }
+  const url = A.fileUrl(os, version);
+  try {
+    const rel = version ? null : await A.latestRelease().catch(() => null);
+    await A.recordDownload(user, profile, os, (version || rel?.version || '').replace(/^v/, ''));
+  } catch (e) { console.warn('download not recorded', e); }
+  location.href = url;
+}
+document.querySelectorAll('#done [data-os]').forEach(b => b.onclick = () => download(b.dataset.os));
+</script>
+</body>
+</html>
