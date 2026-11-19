@@ -229,6 +229,7 @@
         <li>Free, no subscription</li><li>Quick sign-up with Google</li><li>Works offline</li><li>Opens Lightroom catalogues</li>
       </ul>
       <p class="howlink" style="margin-bottom:0">Downloading needs a free Greylight account: sign up with Google in a few seconds.</p>
+      <p class="howlink" id="phone-note" hidden style="margin:10px 0 0;color:var(--text)">On a phone or tablet? Greylight runs on Mac and Windows computers: open <b>greylightapp.github.io</b> on your computer to download it.</p>
       <a class="howlink" href="#install">New to installing apps? Watch the 1-minute install video ↓</a>
 
       <div class="showcase" aria-hidden="true">
@@ -473,6 +474,14 @@
   const navDl = document.getElementById('nav-dl');
   navDl.textContent = isWin ? 'Download for Windows' : 'Download for Mac';
   navDl.href = link(isWin ? 'windows' : 'mac');
+  // Phones and tablets can't run Greylight: say so, and keep the top button
+  // pointing at the download section instead of a Mac download.
+  const isPhone = !isWin && /iPhone|iPad|iPod|Android|Mobile/i.test(navigator.userAgent);
+  if (isPhone) {
+    navDl.textContent = 'Download';
+    navDl.href = '#download';
+    document.getElementById('phone-note').hidden = false;
+  }
 
   const tabs = [...document.querySelectorAll('[role="tab"]')];
   function select(tab) {
