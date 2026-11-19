@@ -57,7 +57,7 @@
     <h1>Greylight admin</h1>
     <p class="sub" id="gate-text">Sign in with the Greylight team account to see downloads, users and publish updates.</p>
     <div id="gate-err" class="msg err" hidden></div>
-    <div id="google" class="gsi-slot" style="justify-content:flex-start"><span class="muted">Loading Google sign-in…</span></div>
+    <div id="google-signin" class="gsi-slot" style="justify-content:flex-start"><span class="muted">Loading Google sign-in…</span></div>
   </section>
 
   <section id="app" hidden>
@@ -140,7 +140,7 @@ function flash(id, ok, text) { const m = $(id); m.className = 'msg ' + (ok ? 'ok
 
 if (!A.configured) {
   $('gate-text').textContent = 'The Firebase project isn\'t connected yet (firebase-config.js).';
-  $('google').hidden = true;
+  $('google-signin').hidden = true;
 } else {
   A.onUser(async u => {
     $('me').textContent = u ? u.email : '';
@@ -152,7 +152,7 @@ if (!A.configured) {
   });
 }
 function gateError(e) { $('gate-err').textContent = 'Sign-in failed (' + (e.code || e.message) + '). Reload the page and try again.'; $('gate-err').hidden = false; }
-if (A.configured) A.googleButton($('google'), { text: 'signin_with', onStart: () => { $('gate-err').hidden = true; }, onError: gateError }).catch(gateError);
+if (A.configured) A.googleButton($('google-signin'), { text: 'signin_with', onStart: () => { $('gate-err').hidden = true; }, onError: gateError }).catch(gateError);
 $('signout').onclick = () => A.signOut();
 
 document.querySelectorAll('[role=tab]').forEach(t => t.onclick = () => {

@@ -34,7 +34,7 @@
     <p class="sub">Sign up with Google to download Greylight for Mac or Windows. The app signs in with the same account and greets you by name, and you'll be told inside Greylight whenever a new version is out.</p>
     <div class="card stack">
       <div id="out-err" class="msg err" hidden></div>
-      <div id="google" class="gsi-slot" aria-live="polite"><span class="muted">Loading Google sign-in…</span></div>
+      <div id="google-signin" class="gsi-slot" aria-live="polite"><span class="muted">Loading Google sign-in…</span></div>
       <p class="muted" style="margin:12px 0 0">Already signed up? Continue with the same Google account to go straight to your downloads. By continuing you agree to our <a href="privacy.html">privacy policy</a>.</p>
     </div>
   </section>
@@ -116,10 +116,10 @@ function show(id) {
   if (id === 'signed-out') googleButton();
 }
 function googleButton() {
-  A.googleButton($('google'), {
-    onStart: () => { err('out-err', null); $('google').classList.add('busy'); },
-    onError: e => { $('google').classList.remove('busy'); err('out-err', e); },
-  }).catch(e => { $('google').textContent = ''; err('out-err', e); });
+  A.googleButton($('google-signin'), {
+    onStart: () => { err('out-err', null); $('google-signin').classList.add('busy'); },
+    onError: e => { $('google-signin').classList.remove('busy'); err('out-err', e); },
+  }).catch(e => { $('google-signin').textContent = ''; err('out-err', e); });
 }
 function err(box, e) {
   const el = $(box);
