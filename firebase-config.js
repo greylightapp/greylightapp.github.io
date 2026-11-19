@@ -2,10 +2,10 @@
 // project; they are not secrets. Who may read or change what is decided by
 // the security rules in firestore.rules.
 export const firebaseConfig = {
-  apiKey: '',
-  authDomain: '',
-  projectId: '',
-  appId: '',
+  apiKey: 'AIzaSyCy8p6h8S9Xw87aBzbBvfGY80jwL2ucAzk',
+  authDomain: 'greylight-app-6032f.firebaseapp.com',
+  projectId: 'greylight-app',
+  appId: '1:647348742470:web:ee658cbfed4dd6233f9d47',
 };
 
 // The one Google account that can open admin.html.
