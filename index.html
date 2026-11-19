@@ -538,8 +538,10 @@
   // Every version, newest first, from the download repository's releases.
   const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const list = document.getElementById('version-list');
+  // GitHub allows 60 of these checks an hour per network; when it says no
+  // (403/429), the download buttons stay as they are instead of "coming soon".
   fetch(`https://api.github.com/repos/${A.REPO}/releases?per_page=30`)
-    .then(r => r.ok ? r.json() : [])
+    .then(r => { if (!r.ok) throw new Error('GitHub ' + r.status); return r.json(); })
     .then(releases => {
       releases = releases.filter(r => !r.draft);
       const has = name => (releases[0]?.assets || []).some(a => a.name === name);

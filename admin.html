@@ -149,7 +149,7 @@ if (!A.configured) {
     $('gate').hidden = admin; $('app').hidden = !admin;
     if (u && !admin) { $('gate-err').textContent = `${u.email} isn't the Greylight team account. Sign out and use ${A.ADMIN_EMAIL}.`; $('gate-err').hidden = false; }
     if (admin) await load();
-  });
+  }).catch(e => gateError(e));
 }
 function gateError(e) { $('gate-err').textContent = 'Sign-in failed (' + (e.code || e.message) + '). Reload the page and try again.'; $('gate-err').hidden = false; }
 if (A.configured) A.googleButton($('google-signin'), { text: 'signin_with', onStart: () => { $('gate-err').hidden = true; }, onError: gateError }).catch(gateError);
