@@ -1,6 +1,6 @@
 // Greylight accounts on the website: Google sign-in, the sign-up profile
 // and download records, on Firebase (Auth + Firestore).
-import { firebaseConfig, ADMIN_EMAIL, REPO, FILES } from './firebase-config.js';
+import { firebaseConfig, GOOGLE_CLIENT_ID, ADMIN_EMAIL, REPO, FILES } from './firebase-config.js';
 
 const SDK = 'https://www.gstatic.com/firebasejs/10.12.2/';
 
@@ -18,8 +18,9 @@ export function firebase() {
       import(SDK + 'firebase-firestore.js'),
     ]);
     const app = initializeApp(firebaseConfig);
-    const auth = au.getAuth(app);
-    await au.setPersistence(auth, au.browserLocalPersistence);
+    // No pop-up/redirect helper: Google's own button signs people in (below),
+    // so Firebase never needs its hidden sign-in frame, which Safari blocks.
+    const auth = au.initializeAuth(app, { persistence: [au.indexedDBLocalPersistence, au.browserLocalPersistence] });
     return { auth, db: fs.getFirestore(app), fs, au };
   })();
   return ready;
@@ -37,16 +38,53 @@ export async function onUser(callback) {
   return au.onAuthStateChanged(auth, callback);
 }
 
-export async function signInWithGoogle() {
-  const { auth, au } = await firebase();
-  const provider = new au.GoogleAuthProvider();
-  provider.setCustomParameters({ prompt: 'select_account' });
-  const result = await au.signInWithPopup(auth, provider);
-  return result.user;
+let gsi;
+/** Google Identity Services (Google's sign-in button), loaded once. */
+function loadGoogle() {
+  gsi ??= new Promise((resolve, reject) => {
+    if (window.google?.accounts?.id) return resolve(window.google);
+    const s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.async = true;
+    s.onload = () => resolve(window.google);
+    s.onerror = () => { gsi = null; reject(Object.assign(new Error('network'), { code: 'network-google' })); };
+    document.head.appendChild(s);
+  });
+  return gsi;
+}
+
+let handlers = {};
+/**
+ * Puts Google's "Continue with Google" button into [el]. Choosing an account
+ * signs in to Greylight; onUser() then reports the new user.
+ * Works in Safari, Chrome, Edge and Firefox (no third-party cookies needed).
+ */
+export async function googleButton(el, { onStart, onError, text = 'continue_with' } = {}) {
+  handlers = { onStart, onError };
+  const [google, { auth, au }] = await Promise.all([loadGoogle(), firebase()]);
+  if (!googleButton.ready) {
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      ux_mode: 'popup',
+      auto_select: false,
+      cancel_on_tap_outside: true,
+      callback: async r => {
+        try {
+          handlers.onStart?.();
+          await au.signInWithCredential(auth, au.GoogleAuthProvider.credential(r.credential));
+        } catch (e) { handlers.onError?.(e); }
+      },
+    });
+    googleButton.ready = true;
+  }
+  el.replaceChildren();
+  const width = Math.max(200, Math.min(400, Math.round(el.getBoundingClientRect().width) || 320));
+  google.accounts.id.renderButton(el, { type: 'standard', theme: 'filled_black', size: 'large', text, shape: 'pill', logo_alignment: 'center', width });
 }
 
 export async function signOut() {
   const { auth, au } = await firebase();
+  window.google?.accounts?.id?.disableAutoSelect();
   await au.signOut(auth);
 }
 
@@ -129,17 +167,19 @@ export function fileUrl(os, tag) {
     : `https://github.com/${REPO}/releases/latest/download/${file}`;
 }
 
-/** Deletes the profile, then the Google sign-in for Greylight. */
+/**
+ * Deletes the profile, then the Google sign-in for Greylight. Google only
+ * allows this a few minutes after signing in, so an older sign-in is asked
+ * to sign in again first (nothing is deleted until then).
+ */
 export async function deleteAccount(user) {
   const { db, fs, au } = await firebase();
-  await fs.deleteDoc(fs.doc(db, 'users', user.uid));
-  try {
-    await au.deleteUser(user);
-  } catch (e) {
-    if (e.code !== 'auth/requires-recent-login') throw e;
-    await au.reauthenticateWithPopup(user, new au.GoogleAuthProvider());
-    await au.deleteUser(user);
+  const signedInAt = Date.parse(user.metadata?.lastSignInTime || '') || 0;
+  if (Date.now() - signedInAt > 4 * 60 * 1000) {
+    throw Object.assign(new Error('recent-login'), { code: 'auth/requires-recent-login' });
   }
+  await fs.deleteDoc(fs.doc(db, 'users', user.uid));
+  await au.deleteUser(user);
 }
 
 /** The newest published version (public/release), or null. */

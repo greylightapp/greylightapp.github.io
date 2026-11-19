@@ -8,6 +8,10 @@ export const firebaseConfig = {
   appId: '1:647348742470:web:ee658cbfed4dd6233f9d47',
 };
 
+// Google sign-in button (Google Cloud › Google Auth Platform › Clients ›
+// "Web client"). Its authorised JavaScript origins must list the website.
+export const GOOGLE_CLIENT_ID = '647348742470-9jfslcihboastb6hi0i7025188beq1pr.apps.googleusercontent.com';
+
 // The one Google account that can open admin.html.
 export const ADMIN_EMAIL = 'greylightcompany53@gmail.com';
 

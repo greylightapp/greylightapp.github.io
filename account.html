@@ -34,7 +34,7 @@
     <p class="sub">Sign up with Google to download Greylight for Mac or Windows. The app signs in with the same account and greets you by name, and you'll be told inside Greylight whenever a new version is out.</p>
     <div class="card stack">
       <div id="out-err" class="msg err" hidden></div>
-      <button class="btn primary" id="google" style="width:100%"><svg aria-hidden="true"><use href="#google"/></svg>Continue with Google</button>
+      <div id="google" class="gsi-slot" aria-live="polite"><span class="muted">Loading Google sign-in…</span></div>
       <p class="muted" style="margin:12px 0 0">Already signed up? Continue with the same Google account to go straight to your downloads. By continuing you agree to our <a href="privacy.html">privacy policy</a>.</p>
     </div>
   </section>
@@ -110,13 +110,26 @@ const next = params.get('next');            // mac | windows: download once sign
 const fromApp = params.get('from') === 'app';
 const tag = params.get('tag');               // an older version from the Versions list
 const views = ['loading', 'signed-out', 'details', 'done', 'unconfigured'];
-function show(id) { for (const v of views) $(v).hidden = v !== id; window.scrollTo(0, 0); }
+function show(id) {
+  for (const v of views) $(v).hidden = v !== id;
+  window.scrollTo(0, 0);
+  if (id === 'signed-out') googleButton();
+}
+function googleButton() {
+  A.googleButton($('google'), {
+    onStart: () => { err('out-err', null); $('google').classList.add('busy'); },
+    onError: e => { $('google').classList.remove('busy'); err('out-err', e); },
+  }).catch(e => { $('google').textContent = ''; err('out-err', e); });
+}
 function err(box, e) {
   const el = $(box);
   el.className = 'msg err';
   if (!e) { el.hidden = true; return; }
   const code = e.code || e.message || String(e);
-  el.textContent = code.includes('popup-closed') || code.includes('cancelled-popup')
+  el.textContent = code.includes('requires-recent-login')
+    ? 'For your safety, Google needs a fresh sign-in first: click Sign out, continue with Google again, then click Delete my account.'
+    : code.includes('network-google') ? 'Google sign-in couldn\'t load. Check your connection (and any content blocker for this site), then reload the page.'
+    : code.includes('popup-closed') || code.includes('cancelled-popup')
     ? 'The Google window was closed before signing in. Try again.'
     : code.includes('popup-blocked') ? 'Your browser blocked the Google window. Allow pop-ups for this site and try again.'
     : code.includes('network') || code.includes('unavailable') ? 'Can\'t reach Greylight right now. Check your connection and try again.'
@@ -174,11 +187,6 @@ function fillForm() {
   show('details');
 }
 
-$('google').onclick = async () => {
-  err('out-err', null);
-  $('google').disabled = true;
-  try { await A.signInWithGoogle(); } catch (e) { err('out-err', e); } finally { $('google').disabled = false; }
-};
 
 $('form').onsubmit = async ev => {
   ev.preventDefault();
