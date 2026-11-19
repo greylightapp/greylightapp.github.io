@@ -1,0 +1,46 @@
+# Publishing a new version: push the files into dist/ with dist/VERSION and
+# dist/NOTES.md. This turns them into a GitHub Release (where the download
+# buttons point) and then removes them from the site again.
+name: Publish downloads
+
+on:
+  push:
+    branches: [main]
+    paths: ["dist/**"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Create or update the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [ -f dist/VERSION ] || { echo "no dist/VERSION"; exit 0; }
+          v=$(tr -d ' \n' < dist/VERSION)
+          tag="v$v"
+          mapfile -t files < <(find dist -maxdepth 1 -type f \( -name '*.dmg' -o -name '*.zip' \) | sort)
+          if gh release view "$tag" >/dev/null 2>&1; then
+            [ ${#files[@]} -eq 0 ] || gh release upload "$tag" "${files[@]}" --clobber
+            [ -f dist/NOTES.md ] && gh release edit "$tag" --notes-file dist/NOTES.md
+          else
+            gh release create "$tag" --title "Greylight $v" --latest \
+              --notes-file dist/NOTES.md "${files[@]}"
+          fi
+          gh release view "$tag" --json assets --jq '.assets[] | "\(.name) \(.size)"'
+      - name: Remove the files from the site
+        run: |
+          git config user.name "Greylight"
+          git config user.email "greylightcompany53@gmail.com"
+          git rm -rq dist
+          git commit -qm "Published downloads"
+          git push
