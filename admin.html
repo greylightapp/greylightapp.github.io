@@ -160,6 +160,28 @@ document.querySelectorAll('[role=tab]').forEach(t => t.onclick = () => {
   document.querySelectorAll('[data-panel]').forEach(p => p.hidden = p.dataset.panel !== t.dataset.tab);
 });
 
+function newer(a, b) {
+  const x = a.split('.').map(Number), y = b.split('.').map(Number);
+  for (let i = 0; i < Math.max(x.length, y.length); i++) {
+    if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) > (y[i] || 0);
+  }
+  return false;
+}
+
+// The newest version on the download page (GitHub Releases): its number,
+// date and the "- " lines of its notes.
+async function newestDownload() {
+  try {
+    const r = await fetch(`https://api.github.com/repos/${A.REPO}/releases/latest`);
+    if (!r.ok) return null;
+    const j = await r.json();
+    const lines = (j.body || '').split('\n').map(l => l.trim()).filter(l => l.startsWith('- ')).map(l => l.slice(2));
+    return { version: (j.tag_name || '').replace(/^v/, ''), date: (j.published_at || new Date().toISOString()).slice(0, 10), notes: lines.join('\n') };
+  } catch (_) {
+    return null;
+  }
+}
+
 async function load() {
   try {
     data = await A.adminData();
@@ -171,6 +193,17 @@ async function load() {
     f.notes.value = rel?.notes || '';
     f.macUrl.value = rel?.macUrl || A.fileUrl('mac');
     f.windowsUrl.value = rel?.windowsUrl || A.fileUrl('windows');
+    // A newer version on the download page than in people's apps: fill the
+    // form from it, so publishing the notice is one click.
+    const gh = await newestDownload();
+    if (gh && (!rel?.version || newer(gh.version, rel.version))) {
+      f.version.value = gh.version;
+      f.date.value = gh.date;
+      f.notes.value = gh.notes;
+      f.macUrl.value = A.fileUrl('mac');
+      f.windowsUrl.value = A.fileUrl('windows');
+      flash('rel-msg', true, `Greylight ${gh.version} is on the download page but not yet in people's apps. Check the text, then click Publish.`);
+    }
     preview();
     const notice = await A.readPublic('site');
     $('notice').text.value = notice?.notice || '';
